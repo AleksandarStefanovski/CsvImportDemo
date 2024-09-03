@@ -1,0 +1,4 @@
+- Clone the solution
+- Make sure you are running docker-desktop
+- Run the solution with docker-compose
+- MongoDb conn string: mongodb://root:root@localhost:27017/ 
