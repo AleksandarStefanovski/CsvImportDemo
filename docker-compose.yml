@@ -1,0 +1,43 @@
+version: '3.4'
+
+services:
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: root
+    volumes:
+      - mongo-data:/data/db
+
+  csvimportdemo:
+    build:
+      context: .
+      dockerfile: CsvImportDemo/Dockerfile
+    image: csvimportdemo
+    ports:
+      - "8080:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:8080
+      - MongoSettings__ConnectionString=mongodb://root:root@mongodb:27017
+      - MongoSettings__DatabaseName=CsvDemoDb
+    depends_on:
+      - mongodb
+
+  csvimportbenchmarkdemo:
+    build:
+      context: .
+      dockerfile: CsvImportBenchmarkDemo/Dockerfile
+    image: csvimportbenchmarkdemo
+    depends_on:
+      - csvimportdemo
+    environment:
+      - API_BASE_URL=http://csvimportdemo:8080
+    volumes:
+      - ./data:/app/data
+
+volumes:
+  mongo-data:
